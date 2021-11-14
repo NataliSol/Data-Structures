@@ -1,4 +1,4 @@
-package com.luxoft.datastructures.list.queueTest;
+package com.luxoft.datastructures.queueTest;
 
 import com.luxoft.datastructures.queue.ArrayQueue;
 import org.junit.jupiter.api.Assertions;
