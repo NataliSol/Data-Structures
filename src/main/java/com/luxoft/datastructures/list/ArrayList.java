@@ -1,36 +1,31 @@
 package com.luxoft.datastructures.list;
 
-public class ArrayList implements List{
+import java.util.StringJoiner;
+
+public class ArrayList implements List {
 
     private int size;
     private Object[] array;
 
     public ArrayList() {
-        array = new Object[10];
+        this.array = new Object[10];
     }
 
     @Override
     public void add(Object value) {
-        if (value == null) {
-            throw new NullPointerException("Nulls are not supported");
-        }
-        ensureCapacity();
-        array[size] = value;
-        size++;
+        add(value, size);
     }
 
     @Override
     public void add(Object value, int index) {
-        if(index > size){
+        if (index > size) {
             throw new IndexOutOfBoundsException("Index is larger than size of the Array List");
         }
-        if (value == null) {
-            throw new NullPointerException("Nulls are not supported");
+        if (size == array.length) {
+            grow();
         }
-        ensureCapacity();
-        var indexArrayValue = array[index];
-        for (int i = size-1; i >= index; i--) {
-            array[i+1] = array[i];
+        for (int i = size; i > index; i--) {
+            array[i] = array[i - 1];
         }
         array[index] = value;
         size++;
@@ -38,19 +33,15 @@ public class ArrayList implements List{
 
     @Override
     public Object remove(int index) {
-        if(index > size){
+        if (index >= size) {
             throw new IndexOutOfBoundsException("Index is larger than size of the Array List");
         }
-
-        var indexArrayValue = array[index];
-
-        for (int i = index; i < size; i++) {
-            array[i] = array[i+1];
-        }
-        array[size-1] = null;
+        Object o = get(index);
+        System.arraycopy(array, index + 1, array, index, size - index - 1);
         size--;
-        return indexArrayValue;
+        return o;
     }
+
 
     @Override
     public Object get(int index) {
@@ -66,7 +57,7 @@ public class ArrayList implements List{
 
     @Override
     public void clear() {
-        for (int i=0; i < size; i++) {
+        for (int i = 0; i < size; i++) {
             array[i] = null;
         }
         size = 0;
@@ -84,13 +75,7 @@ public class ArrayList implements List{
 
     @Override
     public boolean contains(Object value) {
-        for (int i = 0; i < size; i++) {
-            Object valueInStack = array[i];
-            if (value.equals(valueInStack)) {
-                return true;
-            }
-        }
-        return false;
+        return indexOf(value) != -1;
     }
 
     @Override
@@ -115,7 +100,7 @@ public class ArrayList implements List{
         return -1;
     }
 
-    private void ensureCapacity(){
+    private void ensureCapacity() {
         if (size == array.length) {
             Object[] newArray = new Object[(int) (array.length * 1.5)];
             for (int i = 0; i < size; i++) {
@@ -124,15 +109,21 @@ public class ArrayList implements List{
             array = newArray;
         }
     }
+
     @Override
     public String toString() {
-        StringBuilder result = new StringBuilder();
+        StringJoiner stringJoiner = new StringJoiner(",", "[", "]");
         for (int i = 0; i < size; i++) {
-            result.append(array[i]);
-            if (i < size - 1) {
-                result.append(", ");
-            }
+            stringJoiner.add(array[i].toString());
         }
-        return "[" + result + "]";
+        return stringJoiner.toString();
+    }
+
+    private void grow() {
+        Object[] growArray = new Object[(int) (array.length * 1.5)];
+        for (int i = 0; i < size; i++) {
+            growArray[i] = array[i];
+        }
+        array = growArray;
     }
 }
